@@ -1,0 +1,118 @@
+=====
+PLAN
+=====
+>Basic Cherub Functionality
+	>Transform
+		>DebugTransformableCube
+			>Console Watcher (Debug)	-DONE-
+	>Basic Scene manager (proper main loop)
+	>Collisions
+	>Time
+	>Mouse Input
+
+
+=====
+LOG ENTRIES
+=====
+
+20/2
+	Working on Transform
+	Decided to create a visual test-environment: DebugTransformableCube
+	Should take commands from console command line
+	Decided to create command line system in Debug.h&cpp
+	Ended work at creating update function
+	array of commands should be an automatically expanding heap-allocated array
+
+25/2
+	Continued with the above
+	Stuck with trying to read input without blocking
+	cin.get seems promising but is missing the terminal character
+	added call to consoleWatcherUpdate in Visual unit test
+
+15/7
+	It's been a while... for sure!
+	I'll continue with the console command system
+	Today I discovered that windows provides macro definitions for max and min, they're just macros, so I'll use them, should still work on other platforms
+	I added some useful functions for managing the command list array
+	It seems an non-blocking console input read is best done with threads
+	Ok so I've set up a seperate thread that just waits for input (hope it doesn't drain too many resources)
+	if possible, reduce the priority of this thread A LOT
+	The console thread should parse the incoming command into substrings...
+	...but I couldn't finish it yet
+	Next time, I should rewrite splitCstring to make a std::string verision (have a look at std::string::substr)
+	Use that function in Debug/consoleWatcher(), in place of splitCstring
+	Then hopefully-maybe-in-my-dreams-of-blue-moons everything will work out
+
+---2023---
+
+23/1
+	Six months later, let's pick up this project again, for real this time!
+	I warmed up by implementing a string-splitter, this time with std::string::substr, as suggested
+	Has yet to be tested, cleaned or integrated
+	Good Luck! :)
+
+24/1
+	Input seems to work correctly, tested with the echo command
+	I also added a "watcher" command, implemented directly into console system so it won't show up in "help" (is that bad?)
+	Quotation marks are still not handled, this may become an issue later, but add this functionality when needed
+	Looking back in the log (glad I'm writing these things down), this was all done for the DebugTransformabCube.cpp file
+	Start working there next, you may want to add an isometric camera, to better judge distances
+	This isn't so bad once you get going, huh?
+	THOUGHT: This program is getting very bloated very quickly, write code carefully, and consider writing documentation for yourself
+
+27/1
+	I wrote like three lines in order to do the orthographic projection thing
+	I haven't tested it yet though
+	sorry... I've kind lost some momentum
+
+6/2
+	Alright, not much to do this week, here's my chance to pick up the pace again
+	Today I've tested the isometric camera, and fixed it, so it should be usable now
+	Keep in mind that isometric cameras are... isometric, you won't see anything unless you know where to find it
+	Going forward, I need every class to be proof-read, cleaned, and given simple documentation for myself
+	Don't add functionality until you need it, but we need to establish a clean workflow
+	Tomorrow however, we start implenting the commandline stuff for testing transforms
+
+19/2
+	I laid the ground work of the DebugTransformableCube class
+	All that is missing (assuming everything works out) is the commands calling transform functions
+	Problem right now is that the static "cubes" vector creates some kind of circular dependency which the compiler doesn't like
+	I need to spend more time on this, more focused session too
+	A simple solution would be (I think) to just move the variable outside the class, I don't like it though (but this is a debug program)
+	Try to test this program outside the Visual unit test, directly in main, just to get some practise
+
+20/2
+	I fixed the "cubes" issue by declaring and initializing it in the .cpp file (it would appear in multiple places if in the .h file)
+	I checked the add/remove and list commands, and they seem to be working fine now
+	I started working on the transform cube function, but I'm struggling
+	How do I translate a text propt into a call of a specific function... within a specific instance of a class?
+	The fact that there are different headers for the functions don't help either, right now I just gave pointers for all three, check for validity on call
+	Also, apparently my latest line (DebugTransformableCube.cpp line 88) is wrong
+
+21/2
+	So I decided to use std::function instead, might be cleaner than spamming *&(*::) everywhere (not correct code)
+	Somehow I found a way to break intellisense, there's a line of code which, when uncommented, stops intellisense from processing the rest of the file
+	The issue right now seems to be the compiler doesn't like me passing the results of std::bind into a parameter expecting std::function
+	Fair enough
+	I don't know how to get around this though
+	Good luck
+
+6/3
+	Mission of the day: Find a way to call a transform function from the console (and do it)
+	Partially done, compiler isn't complaining anymore, screw all that std::function non-sense
+	call via the functionPair pointer when you have parsed the arguments
+	Suggested next mission: Parse the arguments
+
+19/3
+	Mission of the day: parse arguments and successfully call one transform function
+	Almost done, but I have an issue
+	Either I declare and intialise vectorArgument on separate commands, which causes an access violation exception
+	Or I do it in one go, which does not... do anything, the vector seems to keep the values given on instantiation
+	I know the function call to setPosition works, I know the parsed returns the right value
+		It is at this point that I realised my mistake, 
+		apparently it is possible to write functions (the parser) without a return value, 
+		leading to garbage results in the return value
+	The problem has now been fixed, MISSION ACCOMPLISHED
+	Here is another issue:
+		crash at following sequence: arcb a | arcb a
+	Suggested next mission: fix crash above, implement float and quaternion function calls

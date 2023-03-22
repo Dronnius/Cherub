@@ -1,0 +1,9 @@
+#This is a comment, disregard entire line
+#These controls are set with DebugCamera.cpp in mind
+1 = 265, 87		#up = KEY_UP,KEY_W
+2 = 264, 83		#down = KEY_DOWN,KEY_S
+3 = 263, 65		#left = KEY_LEFT,KEY_A
+4 = 262, 68		#right = KEY_RIGHT,KEY_D
+5 = 340, 344		#shift = KEY_LEFT_SHIFT, KEY_RIGHT_SHIFT
+6 = 81, 333		#slower = KEY_Q, KEY_KP_SUBTRACT
+7 = 69, 334		#faster= KEY_E, KEY_KP_ADD
